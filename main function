@@ -1,0 +1,111 @@
+#include<iostream>
+using namespace std;
+
+bool ok(int b[], int column){ 
+    /* function to check if a queen can be placed in the index of the array, b[c], which represents the row */
+    for(int i = 0; i<column; i++){
+        if(b[i]==b[column] || column-i == abs(b[column]-b[i])) return false;
+        /* if one of the tests (row, down-diagonal, or up-diagonal) fails we return false and increment one to try the next row */
+       }   
+       return true;    
+    }
+
+void print(int q[]) {
+   static int solution = 1; // static means that the solutions would only be initialized once to 0 when the print function is called and then the incremented numbers would be remembered the next time the function is called, as opposed to the solution always being at 0. 
+   if (solution >= 2) return ;
+   int i, j, k, l; // will be used in following lines
+   typedef string box[5][7];   // now box is its own data type which we can use similar to int, char, bool etc. Box is a 2-D array of characters with 5 rows and 7 columns. 
+   box bb, wb, *board[8][8]; // bb and wb are blackbox and whitebox. board is going to be a 2-d array of 8 rows and 8 columns where every element is a pointer to a box.
+
+   for (i=0; i<5; i++)
+      for (j=0; j<7; j++) {
+         wb[i][j] = ' '; // whitebox is filled with blanks for the illusion that it is white
+         bb[i][j] = "*"; // bb is filled with asterisks. char(219) wasn't working properly. It kept giving me question marks. 
+      }
+   
+ 
+  box bq = { {"*","*","*","*","*","*","*"},
+             {"*","*","*","*","*","*","*"},
+             {"*","*","*","*","*","*","*"},
+             {"*","*","*","*","*","*","*"},
+             {"*","*","*","*","*","*","*"} }; 
+               
+  box wq = { {" "," "," "," "," "," "," "},
+             {" ","I"," ","ch","","an"," "},
+             {"","ge","d"," t","h","e"," "},
+             {" ","w","o","r","l","d"," "},
+             {" "," "," "," "," "," "," "} };
+  
+  /* bq will represent a black queen which will be placed if there is a solution to the odd positions (1,3,5,7) when i and j are added and % 2, and wq (white queen) will be placed if the result is even. You can represent bq and wq however you want, but I used the way waxman did in the video. */
+
+   // fill board with pointers to bb and wb in alternate positions.
+   for(i=0; i<8; i++) // 8 rows
+      for(j=0; j<8; j++) // 8 columns
+         if((i+j)%2 == 0) // checks even 
+            board[i][j] = &wb;
+         else
+            board[i][j] = &bb;
+  /* above we fill each position in the board with addresses of wb and bb depending on whether that position is even or add when the row and column is added and the remainder is checked. 
+  */
+   
+   
+   
+   for (int i = 0; i < 8; i++)
+      if ( (q[i]+i)%2==0)
+          board[q[i]][i] = &wq;
+      else
+          board[q[i]][i] = &bq;
+
+  /* we will check the q[i] which is the row and i which is the col where a queen is to be placed after a solution was created and checked. if that row + column is an even number we will assign it an address of a white queen, other wise it will have the address of a black queen. */
+
+   // first print upper border
+   for (i=0; i<7*8; i++) /* we do 7*8 because there are 7 columns to each box and 8 boxes in total on the board for the top row. */
+      cout << '_';
+   cout << endl;
+
+   // now print the board
+   for (i=0; i<8; i++)          // each row in the board
+      for (k=0; k<5; k++) {     // each row of the box 
+         cout << '|'; // right side border. I used | because char (179) wasn't working properly
+         for (j=0; j<8; j++)    // for each board column
+            for (l=0; l<7; l++) // for each box column
+               // board[i][j] is the box with a pointer 
+               // *board[i][j] is the alias for the type of box being pointed to (wb or bb)
+               // (*board[i][j])[k][l] is the row and col of either a wb or bb. 
+               cout << (*board[i][j])[k][l]; // this will get us either a wb or bb then taking a position would give us a spot within the wb or bb from the array 
+         cout << '|'<<endl; // left side border and then new line. I used this way because char(179) wasn't working
+      }
+
+   // before exiting pring lower border
+   cout << " ";
+   for (i=0; i<7*8; i++)
+      cout << '-'; // I used this because char(196) wasnt working properly
+   cout <<endl<<endl;
+}
+
+int main() {
+    int q[8] = {0}, col = 0;
+    q[col] = 0; // start the queen at row 0 column 0
+    
+    while(col>=0){ // while we are still on the board from the leftmost point (row zero and col zero)
+        col++; // go to next column because we placed a queen in top left 
+        if(col==8) { 
+            /* if we get to the column equals 8 (off the board) we have successfully placed all 8 queens and can print the board */
+            print(q); /* takes two parameters, the array and the number of solutions */
+            return 0;
+            col--; // will backtrack so we find another solution
+        }
+        else
+        q[col] = -1;  
+        while(col>=0){ /* */
+            q[col]++; // q[col] is incremented so we hit rows 0 through 7 (inclusive)
+           if(q[col] == 8)
+            col--; // backtracks after we tested 8 rows and couldn't place a queen
+            else 
+            if (ok(q,col)) break; /* everytime we change our row we go into the ok function. We break out of the while loop when we can place a queen (returns true) in that column and go to the next column */
+        }
+    } /* used while loops because we want to go up and down the rows of the columns and a for loop would increment by 1 going down */
+    return 0;
+
+}
+
