@@ -2,7 +2,7 @@
 
 /*
 
-for this file: please run the code (in the repository) in an online C++ compiler, or other compiler that would carry C++. Personally, I like programiz.com (you can search up C++ online compiler and it should be one of the first websites).
+for this file: please run the code (in the main function above) in an online C++ compiler, or other compiler that would carry C++. Personally, I like programiz.com (you can search up C++ online compiler and it should be one of the first websites).
 
 the code should output the EXACT requirements of the compeition. 
 
